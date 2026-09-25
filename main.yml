@@ -1,0 +1,35 @@
+name: Facebook Comment Scraper
+
+on:
+  workflow_dispatch:
+    inputs:
+      post_url:
+        description: '📌 วางลิงก์โพสต์ Facebook ที่นี่'
+        required: true
+        type: string
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install facebook-scraper
+        run: pip install facebook-scraper lxml_html_clean
+
+      - name: Start Scraping
+        env: 
+          POST_URL: ${{ github.event.inputs.post_url }}
+        run: python run.py
+
+      - name: Upload result file
+        uses: actions/upload-artifact@v4
+        with:
+          name: facebook-comments-data
+          path: comments.csv
